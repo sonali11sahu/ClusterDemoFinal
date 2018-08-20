@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="en">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+
+<script type="text/javascript"
+	th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+<script type="text/javascript"
+	th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+
+<body>
+
+
+	<th:block th:fragment="header">
+		<nav class="navbar navbar-inverse navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" th:href="@{/}"> <!--                     <img th:src="@{/img/logo.png}" alt="memorynotfound logo"/> -->
+					</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a th:href="@{/}">Home</a></li>
+					</ul>
+					<p class="nav navbar-nav"
+						style="float: right; padding-top: 15px; padding-bottom: 15px;">
+						<span sec:authorize="isAuthenticated()"
+							style="display: inline-block;"> Logged user: <span
+							sec:authentication="name"></span> | <span
+							sec:authentication="principal.authorities"></span> | <a
+							th:href="@{/logout}">Sign Out</a>
+						</span>
+					</p>
+				</div>
+			</div>
+		</nav>
+	</th:block>
+
+	<div>
+		<h1 style="text-align: center;">Clusters Example</h1>
+
+		<div style="text-align: center;">
+    <p >Sorry the was some mistake or you are not authorized to access the resources.</p>
+    <p>
+        Go to the <a href="/" th:href="@{/home}">secured pages</a>
+    </p>
+    </div>
+
+		<th:block th:fragment="footer">
+			<footer>
+				<div class="container">
+					<p style="width: inherit; display: inline-block; padding-top: 15px; padding-bottom: 15px; text-align: center;">
+						<span sec:authorize="isAuthenticated()"> Logged user: <span
+							sec:authentication="name"></span> | <span style="float: right"><a
+								th:href="@{/logout}">Sign Out</a></span>
+						</span>
+					</p>
+				</div>
+			</footer>
+
+		</th:block>
+
+		<form class="form-horizontal" id="form_edit" th:object="${cls}"
+			th:action="@{/home}" method="post">
+			<input type="hidden" th:field="*{id}" id="form_id" /> <input
+				type="hidden" th:field="*{name}" id="form_name" /> <input
+				type="hidden" th:field="*{number}" id="form_number" />
+		</form>
+
+	</div>
+
+
+
+
+</body>
+</html>

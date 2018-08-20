@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="en">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+
+<script type="text/javascript"
+	th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+<script type="text/javascript"
+	th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+
+<body>
+
+
+	<th:block th:fragment="header">
+		<nav class="navbar navbar-inverse navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" th:href="@{/}"> <!--                     <img th:src="@{/img/logo.png}" alt="memorynotfound logo"/> -->
+					</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a th:href="@{/home}">Home</a></li>
+					</ul>
+					<p class="nav navbar-nav"
+						style="float: right; padding-top: 15px; padding-bottom: 15px;">
+						<span sec:authorize="isAuthenticated()"
+							style="display: inline-block;"> Logged user: <span
+							sec:authentication="name"></span> | <span
+							sec:authentication="principal.authorities"></span> | <a
+							th:href="@{/logout}">Sign Out</a>
+						</span>
+					</p>
+				</div>
+			</div>
+		</nav>
+	</th:block>
+
+	<div>
+		<h1 style="text-align: center;">Clusters Example</h1>
+
+		<table id="dtBasicExample"
+			class="table table-striped table-responsive ">
+			<tr>
+				<th>Cluster Name</th>
+				<th>Number</th>
+				<!-- 				<th>Edit</th> -->
+			</tr>
+			<tr th:each="cluster : ${clusters}">
+				<td th:text="${cluster.name}">Name</td>
+				<!-- 				<td th:text="${cluster.number}">Number</td> -->
+				<td>
+					<div th:name="'edit_' +${cluster.id}">
+						<input type="text" th:id="'edit_' +${cluster.id}" readonly
+							th:value="${cluster.number}">
+						<button th:id="'bt_'+${cluster.id}"
+							th:onclick="'javascript:editCluster('+${cluster.id}+',\''+${cluster.name}+ '\');'"
+							type="button" class="btn btn-warning">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</button>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<!-- Result Container  -->
+		<div id="resultContainer" style="display: none;">
+			<hr />
+			<h4 style="color: green;">JSON Response From Server</h4>
+			<pre style="color: green;">
+    <code></code>
+   </pre>
+		</div>
+
+
+		<th:block th:fragment="footer">
+			<footer>
+				<div class="container">
+					<p
+						style="width: inherit; display: inline-block; padding-top: 15px; padding-bottom: 15px; text-align: center;">
+						<span sec:authorize="isAuthenticated()"> Logged user: <span
+							sec:authentication="name"></span> <span style="float: right"><a
+								th:href="@{/logout}">Sign Out</a></span>
+						</span>
+					</p>
+				</div>
+			</footer>
+
+		</th:block>
+
+		<form class="form-horizontal" id="form_edit" th:object="${cls}"
+			th:action="@{/home}" method="post">
+			<input type="hidden" th:field="*{id}" id="form_id" /> <input
+				type="hidden" th:field="*{name}" id="form_name" /> <input
+				type="hidden" th:field="*{number}" id="form_number" />
+		</form>
+
+	</div>
+
+
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			//alert("hello");
+		});
+
+		
+		function editCluster(formid, name) {
+			//alert("hello " + formid);
+
+			$("#form_id").val(formid);
+			$("#form_name").val(name);
+			$("#edit_" + formid).attr("readonly", false);
+			$("#bt_" + formid)
+					.replaceWith(
+							'<button onclick="ajaxSubmit('+formid+');" type="button" class="btn updatebtn btn-success"><span class="glyphicon glyphicon-ok"></span></button>'+
+							'<button onclick="cancelSubmit('+formid+');" type="button" class="btn updatebtn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>');
+			//$("#form_edit"+formid).submit();
+		}
+		
+		function ajaxSubmit(formid){
+			
+			var valueC = $("#edit_" + formid).val();
+			$("#form_number").val(valueC);
+		      
+		      $.post({
+		         url : 'updateCluster',
+		         data : $('#form_edit').serialize(),
+		         success : function(res) {
+		         
+		            if(res.validated){
+		               //Set response
+		               $('#resultContainer pre code').text(JSON.stringify(res.cluster));
+		               $('#resultContainer').show();
+		               $("#edit_" + formid).attr("readonly", true);
+		               var nm = $("#form_name").val();
+		             $(".updatebtn")
+		   			.replaceWith(
+		   					'<button id="bt_+'+formid+'"
+		   					onclick="javascript:editCluster('+formid+','+nm+');"
+		   						type="button" class="btn btn-warning">
+		   						<span class="glyphicon glyphicon-pencil"></span></button>');
+		   					$("#form_number").val('');
+		   					$("#form_id").val('');
+		   					$("#form_name").val('');
+		               
+		            }else{
+		              //Set error messages
+		              $.each(res.errorMessages,function(key,value){
+		  	            $(div[name="'edit_" +formid+"'"]).after('<span class="error">'+value+'</span>');
+		              });
+		            }
+		         }
+		      });
+			
+		}
+		
+		function submitfrom(formid) {
+			var valueC = $("#edit_" + formid).val();
+			$("#form_number").val(valueC);
+			$("#form_edit").submit();
+		}
+		
+		function cancelSubmit(formid) {
+			var valueC = $("#edit_" + formid).val();
+			var nm = $("#form_name").val();
+			$("#edit_" + formid).attr("readonly", true);
+			$(".updatebtn")
+			.replaceWith(
+					'<button id="bt_+'+formid+'"
+					onclick="javascript:editCluster('+formid+','+nm+');"
+						type="button" class="btn btn-warning">
+						<span class="glyphicon glyphicon-pencil"></span></button>');
+					$("#form_number").val('');
+					$("#form_id").val('');
+					$("#form_name").val('');
+			
+		}
+
+
+		// $("div[id^=edit]" ).click(function() {
+
+		// 	    var content = $(this).html();
+		// 	    $(this).replaceWith('<div class="region">' + content + 'hello </div>');
+		// 	    var idC = $("input[name="+this.id+"]").val();
+		// 	    alert( "Handler for .click() called."+idC);
+		// 	    $("#form_"+idC).submit();
+
+		// 	});
+	</script>
+
+
+
+</body>
+</html>
