@@ -65,12 +65,15 @@ public class IndexController {
         model.addAttribute("cls", new Cluster());
         return "admin";
     }
+  
+    //TODO
     
-    @PostMapping(value = "/updateCluster", produces = { MediaType.APPLICATION_JSON_VALUE })
+   /* @PostMapping(value = "/updateCluster", produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
     public ClusterJsonResponse saveEmployee(@ModelAttribute Cluster cluster,
           BindingResult result) {
-
+    	
+    	
     	ClusterJsonResponse respone = new ClusterJsonResponse();
        
        if(result.hasErrors()){
@@ -90,6 +93,6 @@ public class IndexController {
           respone.setCluster(cluster);
        }
        return respone;
-    }
+    }*/
     
 }

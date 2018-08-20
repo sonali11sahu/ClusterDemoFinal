@@ -117,11 +117,13 @@
 			$("#edit_" + formid).attr("readonly", false);
 			$("#bt_" + formid)
 					.replaceWith(
-							'<button onclick="ajaxSubmit('+formid+');" type="button" class="btn updatebtn btn-success"><span class="glyphicon glyphicon-ok"></span></button>'+
-							'<button onclick="cancelSubmit('+formid+');" type="button" class="btn updatebtn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>');
+							'<button onclick="submitfrom('+formid+');" type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button>');//+
+							//'<button onclick="cancelSubmit('+formid+');" type="button" class="btn updatebtn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>');
 			//$("#form_edit"+formid).submit();
 		}
+
 		
+		//TODO 
 		function ajaxSubmit(formid){
 			
 			var valueC = $("#edit_" + formid).val();
@@ -136,22 +138,11 @@
 		               //Set response
 		               $('#resultContainer pre code').text(JSON.stringify(res.cluster));
 		               $('#resultContainer').show();
-		               $("#edit_" + formid).attr("readonly", true);
-		               var nm = $("#form_name").val();
-		             $(".updatebtn")
-		   			.replaceWith(
-		   					'<button id="bt_+'+formid+'"
-		   					onclick="javascript:editCluster('+formid+','+nm+');"
-		   						type="button" class="btn btn-warning">
-		   						<span class="glyphicon glyphicon-pencil"></span></button>');
-		   					$("#form_number").val('');
-		   					$("#form_id").val('');
-		   					$("#form_name").val('');
-		               
+		            
 		            }else{
 		              //Set error messages
 		              $.each(res.errorMessages,function(key,value){
-		  	            $(div[name="'edit_" +formid+"'"]).after('<span class="error">'+value+'</span>');
+		  	            $('input[name='+key+']').after('<span class="error">'+value+'</span>');
 		              });
 		            }
 		         }
@@ -159,13 +150,8 @@
 			
 		}
 		
-		function submitfrom(formid) {
-			var valueC = $("#edit_" + formid).val();
-			$("#form_number").val(valueC);
-			$("#form_edit").submit();
-		}
-		
-		function cancelSubmit(formid) {
+		//TODO
+		/*function cancelSubmit(formid) {
 			var valueC = $("#edit_" + formid).val();
 			var nm = $("#form_name").val();
 			$("#edit_" + formid).attr("readonly", true);
@@ -179,9 +165,15 @@
 					$("#form_id").val('');
 					$("#form_name").val('');
 			
+		}*/
+		
+		function submitfrom(formid) {
+			var valueC = $("#edit_" + formid).val();
+			$("#form_number").val(valueC);
+			$("#form_edit").submit();
 		}
 
-
+		
 		// $("div[id^=edit]" ).click(function() {
 
 		// 	    var content = $(this).html();
